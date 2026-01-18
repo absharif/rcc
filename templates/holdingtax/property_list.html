@@ -1,0 +1,121 @@
+{% extends "holdingtax/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">Properties</h1>
+            <p style="color: #718096;">Total: {{ total_count }} properties</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'holdingtax:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                💰 Taxes
+            </a>
+            <a href="{% url 'holdingtax:property_create' %}" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);">
+                ➕ Add Property
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <form method="get" style="display: grid; grid-template-columns: 1fr auto auto; gap: 10px;">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search by property number, owner name, NID, or address..." 
+                   style="padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+            <select name="status" style="padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                <option value="">All Status</option>
+                <option value="DRAFT" {% if status_filter == 'DRAFT' %}selected{% endif %}>Draft</option>
+                <option value="PENDING_APPROVAL" {% if status_filter == 'PENDING_APPROVAL' %}selected{% endif %}>Pending Approval</option>
+                <option value="APPROVED" {% if status_filter == 'APPROVED' %}selected{% endif %}>Approved</option>
+                <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    🔍 Search
+                </button>
+                {% if search_query or status_filter %}
+                <a href="{% url 'holdingtax:property_list' %}" style="padding: 12px 24px; background: #e2e8f0; color: #4a5568; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                    Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Properties Table -->
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Property Number</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Owner</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Type</th>
+                    <th style="padding: 15px; text-align: right; font-weight: 600;">Assessed Value</th>
+                    <th style="padding: 15px; text-align: right; font-weight: 600;">Annual Tax</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">City</th>
+                    <th style="padding: 15px; text-align: center; font-weight: 600;">Status</th>
+                    <th style="padding: 15px; text-align: center; font-weight: 600;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for property in properties %}
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 15px;">
+                        <div style="font-weight: 600; color: #2d3748;">{{ property.property_number }}</div>
+                    </td>
+                    <td style="padding: 15px;">
+                        <div style="color: #2d3748;">{{ property.owner.full_name }}</div>
+                        <div style="font-size: 12px; color: #718096;">{{ property.owner.national_id }}</div>
+                    </td>
+                    <td style="padding: 15px; color: #4a5568;">{{ property.property_type.name }}</td>
+                    <td style="padding: 15px; text-align: right; color: #2d3748; font-weight: 600;">৳{{ property.assessed_value|floatformat:2 }}</td>
+                    <td style="padding: 15px; text-align: right; color: #667eea; font-weight: 600;">৳{{ property.annual_tax_amount|floatformat:2 }}</td>
+                    <td style="padding: 15px; color: #4a5568;">{{ property.city|default:"-" }}</td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;
+                            {% if property.status == 'APPROVED' %}background: #c6f6d5; color: #22543d;
+                            {% elif property.status == 'PENDING_APPROVAL' %}background: #feebc8; color: #7c2d12;
+                            {% elif property.status == 'REJECTED' %}background: #fed7d7; color: #742a2a;
+                            {% else %}background: #e2e8f0; color: #4a5568;{% endif %}">
+                            {{ property.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <a href="{% url 'holdingtax:property_detail' property.pk %}" style="padding: 6px 12px; background: #4299e1; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">View</a>
+                            <a href="{% url 'holdingtax:property_update' property.pk %}" style="padding: 6px 12px; background: #ed8936; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">Edit</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="padding: 40px; text-align: center; color: #718096;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">🏠</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">No properties found</div>
+                        <div>{% if search_query or status_filter %}Try a different search or filter{% else %}Start by adding your first property{% endif %}</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if properties.has_other_pages %}
+    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+        {% if properties.has_previous %}
+        <a href="?page={{ properties.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="padding: 10px 20px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; text-decoration: none; font-weight: 600;">Previous</a>
+        {% endif %}
+        
+        <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; font-weight: 600;">
+            Page {{ properties.number }} of {{ properties.paginator.num_pages }}
+        </span>
+        
+        {% if properties.has_next %}
+        <a href="?page={{ properties.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="padding: 10px 20px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; text-decoration: none; font-weight: 600;">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

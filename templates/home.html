@@ -27,57 +27,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #4a5568;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            padding: 8px 16px;
-            border-radius: 8px;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -229,34 +178,11 @@
                 font-size: 16px;
             }
             
-            .navbar {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                gap: 15px;
-            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">
-            <div class="logo-icon">🏛️</div>
-            <span>City Corporation</span>
-        </div>
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="/admin/">Admin Panel</a>
-            {% if user.is_authenticated %}
-                <a href="/admin/logout/">Logout</a>
-            {% else %}
-                <a href="/admin/login/" class="btn-primary">Login</a>
-            {% endif %}
-        </div>
-    </nav>
+    {% include 'includes/public_navbar.html' %}
 
     <div class="hero-section">
         <div class="hero-content">
@@ -265,7 +191,7 @@
             <p>Streamline your city administration with our comprehensive management platform. Manage citizens, taxes, licenses, and services all in one place.</p>
             <div class="cta-buttons">
                 {% if user.is_authenticated %}
-                    <a href="/admin/" class="btn-primary">Go to Dashboard</a>
+                    <a href="/admin/dashboard/" class="btn-primary">Go to Dashboard</a>
                 {% else %}
                     <a href="/admin/login/" class="btn-primary">Admin Login</a>
                 {% endif %}
@@ -300,11 +226,19 @@
                 <div class="feature-icon">📢</div>
                 <h3>Tender Management</h3>
                 <p>Publish and manage public tenders with full tracking and documentation.</p>
+                <a href="/tenders/" style="display: inline-block; margin-top: 15px; color: #667eea; font-weight: 600; text-decoration: none;">View Tenders →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>Citizen Charters</h3>
+                <p>Access information about services, processing times, and required documents.</p>
+                <a href="/citizen-charters/" style="display: inline-block; margin-top: 15px; color: #667eea; font-weight: 600; text-decoration: none;">View Charters →</a>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📝</div>
                 <h3>Complaint System</h3>
                 <p>Track and resolve citizen complaints with priority-based workflow.</p>
+                <a href="/complaints/submit/" style="display: inline-block; margin-top: 15px; color: #667eea; font-weight: 600; text-decoration: none;">Submit Complaint →</a>
             </div>
         </div>
     </div>

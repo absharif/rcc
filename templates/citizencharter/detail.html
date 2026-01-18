@@ -1,0 +1,89 @@
+{% extends "citizencharter/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">{{ charter.title }}</h1>
+            <a href="{% url 'citizencharter:list' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">← Back to Citizen Charters</a>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'citizencharter:update' charter.pk %}" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);">
+                ✏️ Edit
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 20px;">
+        <!-- Main Information -->
+        <div>
+            <!-- Charter Information -->
+            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Charter Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div style="grid-column: 1 / -1;">
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Title</div>
+                        <div style="color: #2d3748; font-size: 20px; font-weight: 600;">{{ charter.title }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Service Type</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ charter.get_service_type_display }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Processing Time</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ charter.processing_time }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Fees</div>
+                        <div style="color: #667eea; font-size: 20px; font-weight: 700;">৳{{ charter.fees|floatformat:2 }}</div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Description</div>
+                        <div style="color: #2d3748; font-size: 16px; line-height: 1.6;">{{ charter.description|linebreaks }}</div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Required Documents</div>
+                        <div style="color: #2d3748; font-size: 16px; line-height: 1.6; padding: 15px; background: #f7fafc; border-radius: 8px; border-left: 4px solid #4299e1;">{{ charter.required_documents|linebreaks }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Status Card -->
+            <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Charter Status</h3>
+                <div style="display: inline-block; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 14px;
+                    {% if charter.is_active %}background: #c6f6d5; color: #22543d;
+                    {% else %}background: #cbd5e0; color: #2d3748;{% endif %}">
+                    {% if charter.is_active %}✓ Active{% else %}✗ Inactive{% endif %}
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">System Information</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Created At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ charter.created_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Updated At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ charter.updated_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="margin-top: 20px;">
+                <a href="{% url 'citizencharter:delete' charter.pk %}" style="display: block; padding: 12px; background: #f56565; color: white; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600;" onclick="return confirm('Are you sure you want to delete this charter?')">
+                    🗑️ Delete Charter
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

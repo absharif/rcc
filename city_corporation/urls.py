@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -28,10 +28,25 @@ admin.site.index_title = "Welcome to City Corporation Management System"
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('admin/login/', views.admin_login, name='admin_login'),
+    path('admin/login/', views.admin_login, name='login'),
     path('admin/dashboard/', views.dashboard, name='dashboard'),
     path('admin/dashboard/stats/', views.dashboard_stats_api, name='dashboard_stats'),
     path('admin/logout/', views.logout_view, name='logout'),
+    path('admin/citizens/', include('citizen.urls')),
+    path('admin/holding-tax/', include('holdingtax.urls')),
+    path('admin/trade-license/', include('tradelicense.urls')),
+    path('admin/certifications/', include('certification.urls')),
+    path('admin/tenders/', include('tender.urls')),
+    path('admin/complaints/', include('complaint.urls')),
+    path('admin/citizen-charter/', include('citizencharter.urls')),
+    # Role-based routes
+    path('field-officer/', include('holdingtax.urls_field_officer')),
+    path('officer/', include('certification.urls_officer')),
+    # Public routes (no login required)
+    path('complaints/submit/', views.public_complaint_create, name='public_complaint_create'),
+    path('complaints/success/<str:complaint_number>/', views.public_complaint_success, name='public_complaint_success'),
+    path('tenders/', views.public_tender_list, name='public_tender_list'),
+    path('citizen-charters/', views.public_citizencharter_list, name='public_citizencharter_list'),
     path('django-admin/', admin.site.urls),
 ]
 

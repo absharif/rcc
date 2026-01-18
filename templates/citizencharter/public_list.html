@@ -1,0 +1,354 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Charters - City Corporation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #2d3748;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-header p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-form button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .charters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .charter-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .charter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .charter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .service-type {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        .charter-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .charter-description {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .charter-details {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2d3748;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .detail-value.amount {
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .required-docs {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+            margin-top: 15px;
+        }
+
+        .required-docs-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .required-docs-list {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 60px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pagination span {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .charters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header h1 {
+                font-size: 32px;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/public_navbar.html' %}
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📖 Citizen Charters</h1>
+            <p>Information about our services, processing times, and requirements</p>
+        </div>
+
+        <div class="search-bar">
+            <form method="get" class="search-form">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search charters by title or description...">
+                <select name="service_type">
+                    <option value="">All Services</option>
+                    <option value="tax" {% if service_filter == 'tax' %}selected{% endif %}>Tax Services</option>
+                    <option value="license" {% if service_filter == 'license' %}selected{% endif %}>License Services</option>
+                    <option value="certificate" {% if service_filter == 'certificate' %}selected{% endif %}>Certificate Services</option>
+                    <option value="complaint" {% if service_filter == 'complaint' %}selected{% endif %}>Complaint Services</option>
+                    <option value="other" {% if service_filter == 'other' %}selected{% endif %}>Other Services</option>
+                </select>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit">🔍 Search</button>
+                    {% if search_query or service_filter %}
+                    <a href="/citizen-charters/" style="padding: 12px 24px; background: #e2e8f0; color: #4a5568; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-block;">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        {% if page_obj %}
+        <div class="charters-grid">
+            {% for charter in page_obj %}
+            <div class="charter-card">
+                <div class="charter-header">
+                    <span class="service-type">{{ charter.get_service_type_display }}</span>
+                </div>
+                
+                <h2 class="charter-title">{{ charter.title }}</h2>
+                <p class="charter-description">{{ charter.description }}</p>
+                
+                <div class="charter-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Processing Time</span>
+                        <span class="detail-value">{{ charter.processing_time }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Service Fee</span>
+                        <span class="detail-value amount">৳{{ charter.fees|floatformat:2 }}</span>
+                    </div>
+                </div>
+
+                {% if charter.required_documents %}
+                <div class="required-docs">
+                    <div class="required-docs-label">Required Documents</div>
+                    <div class="required-docs-list">{{ charter.required_documents|linebreaks|truncatewords:20 }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if service_filter %}&service_type={{ service_filter }}{% endif %}">Previous</a>
+            {% endif %}
+            
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if service_filter %}&service_type={{ service_filter }}{% endif %}">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📖</div>
+            <h2 style="color: #2d3748; margin-bottom: 10px;">No Citizen Charters Found</h2>
+            <p style="color: #718096;">{% if search_query or service_filter %}Try a different search or filter{% else %}No active citizen charters available at the moment{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

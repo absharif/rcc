@@ -1,0 +1,187 @@
+{% extends "holdingtax/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">Property: {{ property.property_number }}</h1>
+            <a href="{% url 'holdingtax:property_list' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">← Back to Properties</a>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'holdingtax:property_update' property.pk %}" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);">
+                ✏️ Edit
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 20px;">
+        <!-- Main Information -->
+        <div>
+            <!-- Property Information -->
+            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Property Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Property Number</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ property.property_number }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Property Type</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.property_type.name }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Owner</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ property.owner.full_name }}</div>
+                        <div style="font-size: 12px; color: #718096;">{{ property.owner.national_id }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Status</div>
+                        <div>
+                            <span style="display: inline-block; padding: 6px 16px; border-radius: 12px; font-size: 14px; font-weight: 600;
+                                {% if property.status == 'APPROVED' %}background: #c6f6d5; color: #22543d;
+                                {% elif property.status == 'PENDING_APPROVAL' %}background: #feebc8; color: #7c2d12;
+                                {% elif property.status == 'REJECTED' %}background: #fed7d7; color: #742a2a;
+                                {% else %}background: #e2e8f0; color: #4a5568;{% endif %}">
+                                {{ property.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Address</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.address }}</div>
+                    </div>
+                    {% if property.area %}
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Area</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.area.name }}</div>
+                    </div>
+                    {% endif %}
+                    {% if property.street %}
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Street</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.street.name }}</div>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">City</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.city|default:"-" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Area (sq ft)</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.area_sqft|floatformat:2 }} sq ft</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Assessed Value</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">৳{{ property.assessed_value|floatformat:2 }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Tax Rate</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ property.tax_rate }}%</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Annual Tax</div>
+                        <div style="color: #667eea; font-size: 18px; font-weight: 700;">৳{{ property.annual_tax_amount|floatformat:2 }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Records -->
+            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Tax Records</h2>
+                {% if holding_taxes %}
+                <div style="display: grid; gap: 15px;">
+                    {% for tax in holding_taxes %}
+                    <div style="padding: 15px; background: #f7fafc; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px;">{{ tax.tax_number }}</div>
+                                <div style="font-size: 13px; color: #718096;">{{ tax.tax_period.name }} - Due: {{ tax.due_date|date:"M d, Y" }}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 18px; font-weight: 700; color: #667eea;">৳{{ tax.tax_amount|floatformat:2 }}</div>
+                                <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-top: 5px;
+                                    {% if tax.status == 'PAID' %}background: #c6f6d5; color: #22543d;
+                                    {% elif tax.status == 'PENDING' %}background: #feebc8; color: #7c2d12;
+                                    {% elif tax.status == 'OVERDUE' %}background: #fed7d7; color: #742a2a;
+                                    {% else %}background: #bee3f8; color: #2c5282;{% endif %}">
+                                    {{ tax.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <a href="{% url 'holdingtax:detail' tax.pk %}" style="padding: 6px 12px; background: #4299e1; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">View</a>
+                            <a href="{% url 'holdingtax:payment_add' tax.pk %}" style="padding: 6px 12px; background: #48bb78; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">Pay</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
+                    <div>No tax records</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Attachments -->
+            {% if attachments %}
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Attachments</h2>
+                <div style="display: grid; gap: 15px;">
+                    {% for attachment in attachments %}
+                    <div style="padding: 15px; background: #f7fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px;">{{ attachment.title }}</div>
+                            <div style="font-size: 13px; color: #718096;">{{ attachment.attachment_type.name }} - {{ attachment.uploaded_at|date:"M d, Y" }}</div>
+                        </div>
+                        <a href="{{ attachment.file.url }}" target="_blank" style="padding: 8px 16px; background: #4299e1; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">View</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Status Card -->
+            <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Status</div>
+                <div style="display: inline-block; padding: 6px 16px; background: {% if property.is_active %}#c6f6d5{% else %}#fed7d7{% endif %}; color: {% if property.is_active %}#22543d{% else %}#742a2a{% endif %}; border-radius: 20px; font-weight: 600; font-size: 14px;">
+                    {% if property.is_active %}✓ Active{% else %}✗ Inactive{% endif %}
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">System Information</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Created At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ property.created_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Updated At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ property.updated_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                    {% if property.created_by %}
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Created By</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ property.created_by.get_full_name|default:property.created_by.username }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notes -->
+            {% if property.notes %}
+            <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Notes</h3>
+                <div style="color: #4a5568; font-size: 14px; line-height: 1.6;">{{ property.notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

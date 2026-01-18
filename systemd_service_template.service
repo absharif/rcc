@@ -1,0 +1,34 @@
+[Unit]
+Description=gunicorn daemon for City Corporation Management System
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+User=amtun
+Group=www-data
+WorkingDirectory=/home/amtun/rcc/rcc
+Environment="PATH=/home/amtun/rcc/venv/bin"
+EnvironmentFile=/home/amtun/rcc/rcc/.env
+
+# Gunicorn configuration
+ExecStart=/home/amtun/rcc/venv/bin/gunicorn \
+    --access-logfile - \
+    --error-logfile - \
+    --workers 3 \
+    --timeout 30 \
+    --keep-alive 2 \
+    --max-requests 1000 \
+    --max-requests-jitter 50 \
+    --bind unix:/run/rcc_gunicorn.sock \
+    city_corporation.wsgi:application
+
+# Restart configuration
+Restart=always
+RestartSec=3
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

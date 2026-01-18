@@ -1,0 +1,106 @@
+{% extends "holdingtax/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px; max-width: 700px; margin: 0 auto;">
+    <div style="margin-bottom: 30px;">
+        <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">{{ title }}</h1>
+        <p style="color: #718096;">For Tax: <strong>{{ holding_tax.tax_number }}</strong></p>
+        <p style="color: #718096;">Balance: <strong style="color: #f56565;">৳{{ holding_tax.balance_amount|floatformat:2 }}</strong></p>
+        <a href="{% url 'holdingtax:detail' holding_tax.pk %}" style="color: #667eea; text-decoration: none; font-weight: 600;">← Back to Tax Details</a>
+    </div>
+
+    <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div style="background: #fed7d7; color: #c53030; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c53030;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.payment_number.label }} *</label>
+                    {{ form.payment_number }}
+                    {% if form.payment_number.errors %}
+                    <div style="color: #f56565; font-size: 12px; margin-top: 5px;">{{ form.payment_number.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.payment_date.label }} *</label>
+                    {{ form.payment_date }}
+                    {% if form.payment_date.errors %}
+                    <div style="color: #f56565; font-size: 12px; margin-top: 5px;">{{ form.payment_date.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.amount.label }} *</label>
+                    {{ form.amount }}
+                    {% if form.amount.errors %}
+                    <div style="color: #f56565; font-size: 12px; margin-top: 5px;">{{ form.amount.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.payment_method.label }} *</label>
+                    {{ form.payment_method }}
+                    {% if form.payment_method.errors %}
+                    <div style="color: #f56565; font-size: 12px; margin-top: 5px;">{{ form.payment_method.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div>
+                        <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.reference_number.label }}</label>
+                        {{ form.reference_number }}
+                    </div>
+
+                    <div>
+                        <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.cheque_number.label }}</label>
+                        {{ form.cheque_number }}
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.bank_name.label }}</label>
+                    {{ form.bank_name }}
+                </div>
+
+                <div>
+                    <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 8px;">{{ form.notes.label }}</label>
+                    {{ form.notes }}
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <button type="submit" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);">
+                    💵 Record Payment
+                </button>
+                <a href="{% url 'holdingtax:detail' holding_tax.pk %}" style="padding: 12px 30px; background: #e2e8f0; color: #4a5568; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+</style>
+{% endblock %}

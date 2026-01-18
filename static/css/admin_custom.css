@@ -497,3 +497,81 @@ body {
 .deletelink:hover {
     color: #c53030;
 }
+
+/* Django Admin Sidebar Links - White/Shaded */
+/* Target Django admin's default sidebar when it's visible */
+body:not(.popup) #nav-global a,
+body:not(.popup) #nav-global .module a,
+body:not(.popup) #nav-global .module caption a,
+body:not(.popup) #nav-global .module table a,
+body:not(.popup) #nav-global .module ul a,
+body:not(.popup) #nav-global .module li a,
+body:not(.popup) .dashboard #content .module a,
+body:not(.popup) .dashboard #content .module caption a,
+body:not(.popup) .dashboard #content .module table a {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+body:not(.popup) #nav-global a:hover,
+body:not(.popup) #nav-global .module a:hover,
+body:not(.popup) #nav-global .module caption a:hover,
+body:not(.popup) #nav-global .module table a:hover,
+body:not(.popup) #nav-global .module ul a:hover,
+body:not(.popup) #nav-global .module li a:hover,
+body:not(.popup) .dashboard #content .module a:hover,
+body:not(.popup) .dashboard #content .module caption a:hover,
+body:not(.popup) .dashboard #content .module table a:hover {
+    color: white !important;
+    text-decoration: underline;
+}
+
+/* Django Admin Sidebar Module Styling */
+body:not(.popup) #nav-global .module,
+body:not(.popup) .dashboard #content .module {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+body:not(.popup) #nav-global .module h2,
+body:not(.popup) #nav-global .module caption,
+body:not(.popup) .dashboard #content .module h2,
+body:not(.popup) .dashboard #content .module caption {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body:not(.popup) #nav-global .module table th,
+body:not(.popup) .dashboard #content .module table th {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body:not(.popup) #nav-global .module table td,
+body:not(.popup) .dashboard #content .module table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body:not(.popup) #nav-global .module table tr:hover,
+body:not(.popup) .dashboard #content .module table tr:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ensure all text in sidebar modules is white/shaded */
+body:not(.popup) #nav-global,
+body:not(.popup) #nav-global * {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Override for specific elements that should remain visible */
+body:not(.popup) #nav-global .module h2,
+body:not(.popup) #nav-global .module caption {
+    color: white !important;
+    font-weight: 600;
+}

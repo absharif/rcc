@@ -1,0 +1,150 @@
+{% extends "holdingtax/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">Holding Taxes</h1>
+            <p style="color: #718096;">Total: {{ total_count }} taxes</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'holdingtax:property_list' %}" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);">
+                🏠 Properties
+            </a>
+            <a href="{% url 'holdingtax:create' %}" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);">
+                ➕ Add New Tax
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #667eea;">
+            <div style="color: #718096; font-size: 12px; margin-bottom: 8px;">Total Tax</div>
+            <div style="color: #2d3748; font-size: 24px; font-weight: 700;">৳{{ total_tax|floatformat:2 }}</div>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #48bb78;">
+            <div style="color: #718096; font-size: 12px; margin-bottom: 8px;">Total Paid</div>
+            <div style="color: #2d3748; font-size: 24px; font-weight: 700;">৳{{ total_paid|floatformat:2 }}</div>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #ed8936;">
+            <div style="color: #718096; font-size: 12px; margin-bottom: 8px;">Pending</div>
+            <div style="color: #2d3748; font-size: 24px; font-weight: 700;">{{ total_pending }}</div>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #f56565;">
+            <div style="color: #718096; font-size: 12px; margin-bottom: 8px;">Overdue</div>
+            <div style="color: #2d3748; font-size: 24px; font-weight: 700;">{{ total_overdue }}</div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <form method="get" style="display: grid; grid-template-columns: 1fr auto auto; gap: 10px;">
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search by tax number, property number, owner name, or NID..." 
+                   style="padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+            <select name="status" style="padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                <option value="">All Status</option>
+                <option value="PENDING" {% if status_filter == 'PENDING' %}selected{% endif %}>Pending</option>
+                <option value="PAID" {% if status_filter == 'PAID' %}selected{% endif %}>Paid</option>
+                <option value="PARTIAL" {% if status_filter == 'PARTIAL' %}selected{% endif %}>Partial</option>
+                <option value="OVERDUE" {% if status_filter == 'OVERDUE' %}selected{% endif %}>Overdue</option>
+                <option value="WAIVED" {% if status_filter == 'WAIVED' %}selected{% endif %}>Waived</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    🔍 Search
+                </button>
+                {% if search_query or status_filter %}
+                <a href="{% url 'holdingtax:list' %}" style="padding: 12px 24px; background: #e2e8f0; color: #4a5568; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block;">
+                    Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Taxes Table -->
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Tax Number</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Property</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Owner</th>
+                    <th style="padding: 15px; text-align: right; font-weight: 600;">Tax Amount</th>
+                    <th style="padding: 15px; text-align: right; font-weight: 600;">Paid</th>
+                    <th style="padding: 15px; text-align: right; font-weight: 600;">Balance</th>
+                    <th style="padding: 15px; text-align: left; font-weight: 600;">Due Date</th>
+                    <th style="padding: 15px; text-align: center; font-weight: 600;">Status</th>
+                    <th style="padding: 15px; text-align: center; font-weight: 600;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tax in holding_taxes %}
+                <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.2s;">
+                    <td style="padding: 15px;">
+                        <div style="font-weight: 600; color: #2d3748;">{{ tax.tax_number }}</div>
+                        <div style="font-size: 12px; color: #718096;">{{ tax.tax_period.name }}</div>
+                    </td>
+                    <td style="padding: 15px;">
+                        <div style="font-weight: 600; color: #2d3748;">{{ tax.holding_property.property_number }}</div>
+                        <div style="font-size: 12px; color: #718096;">{{ tax.holding_property.city }}</div>
+                    </td>
+                    <td style="padding: 15px;">
+                        <div style="color: #2d3748;">{{ tax.holding_property.owner.full_name }}</div>
+                        <div style="font-size: 12px; color: #718096;">{{ tax.holding_property.owner.national_id }}</div>
+                    </td>
+                    <td style="padding: 15px; text-align: right; color: #2d3748; font-weight: 600;">৳{{ tax.tax_amount|floatformat:2 }}</td>
+                    <td style="padding: 15px; text-align: right; color: #48bb78; font-weight: 600;">৳{{ tax.paid_amount|floatformat:2 }}</td>
+                    <td style="padding: 15px; text-align: right; color: #f56565; font-weight: 600;">৳{{ tax.balance_amount|floatformat:2 }}</td>
+                    <td style="padding: 15px; color: #4a5568;">{{ tax.due_date|date:"M d, Y" }}</td>
+                    <td style="padding: 15px; text-align: center;">
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;
+                            {% if tax.status == 'PAID' %}background: #c6f6d5; color: #22543d;
+                            {% elif tax.status == 'PENDING' %}background: #feebc8; color: #7c2d12;
+                            {% elif tax.status == 'OVERDUE' %}background: #fed7d7; color: #742a2a;
+                            {% elif tax.status == 'PARTIAL' %}background: #bee3f8; color: #2c5282;
+                            {% else %}background: #e2e8f0; color: #4a5568;{% endif %}">
+                            {{ tax.get_status_display }}
+                        </span>
+                    </td>
+                    <td style="padding: 15px; text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <a href="{% url 'holdingtax:detail' tax.pk %}" style="padding: 6px 12px; background: #4299e1; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">View</a>
+                            <a href="{% url 'holdingtax:update' tax.pk %}" style="padding: 6px 12px; background: #ed8936; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">Edit</a>
+                            <a href="{% url 'holdingtax:payment_add' tax.pk %}" style="padding: 6px 12px; background: #48bb78; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;">Pay</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="padding: 40px; text-align: center; color: #718096;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">No holding taxes found</div>
+                        <div>{% if search_query or status_filter %}Try a different search or filter{% else %}Start by adding your first holding tax{% endif %}</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if holding_taxes.has_other_pages %}
+    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+        {% if holding_taxes.has_previous %}
+        <a href="?page={{ holding_taxes.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="padding: 10px 20px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; text-decoration: none; font-weight: 600;">Previous</a>
+        {% endif %}
+        
+        <span style="padding: 10px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; font-weight: 600;">
+            Page {{ holding_taxes.number }} of {{ holding_taxes.paginator.num_pages }}
+        </span>
+        
+        {% if holding_taxes.has_next %}
+        <a href="?page={{ holding_taxes.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="padding: 10px 20px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 8px; text-decoration: none; font-weight: 600;">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

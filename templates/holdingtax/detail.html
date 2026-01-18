@@ -1,0 +1,178 @@
+{% extends "holdingtax/base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #2d3748; font-size: 32px; font-weight: 700; margin-bottom: 10px;">Tax: {{ holding_tax.tax_number }}</h1>
+            <a href="{% url 'holdingtax:list' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">← Back to Holding Taxes</a>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'holdingtax:payment_add' holding_tax.pk %}" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);">
+                💵 Add Payment
+            </a>
+            <a href="{% url 'holdingtax:update' holding_tax.pk %}" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);">
+                ✏️ Edit
+            </a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 20px;">
+        <!-- Main Information -->
+        <div>
+            <!-- Tax Information -->
+            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Tax Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Tax Number</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ holding_tax.tax_number }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Tax Period</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ holding_tax.tax_period.name }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Due Date</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ holding_tax.due_date|date:"F d, Y" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Status</div>
+                        <div>
+                            <span style="display: inline-block; padding: 6px 16px; border-radius: 12px; font-size: 14px; font-weight: 600;
+                                {% if holding_tax.status == 'PAID' %}background: #c6f6d5; color: #22543d;
+                                {% elif holding_tax.status == 'PENDING' %}background: #feebc8; color: #7c2d12;
+                                {% elif holding_tax.status == 'OVERDUE' %}background: #fed7d7; color: #742a2a;
+                                {% elif holding_tax.status == 'PARTIAL' %}background: #bee3f8; color: #2c5282;
+                                {% else %}background: #e2e8f0; color: #4a5568;{% endif %}">
+                                {{ holding_tax.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Information -->
+            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Property Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Property Number</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ holding_tax.holding_property.property_number }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Property Type</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ holding_tax.holding_property.property_type.name }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Owner</div>
+                        <div style="color: #2d3748; font-size: 16px; font-weight: 600;">{{ holding_tax.holding_property.owner.full_name }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Assessed Value</div>
+                        <div style="color: #2d3748; font-size: 16px;">৳{{ holding_tax.holding_property.assessed_value|floatformat:2 }}</div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Address</div>
+                        <div style="color: #2d3748; font-size: 16px;">{{ holding_tax.holding_property.address }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h2 style="color: #2d3748; font-size: 24px; font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #667eea;">Payment History</h2>
+                {% if payments %}
+                <div style="display: grid; gap: 15px;">
+                    {% for payment in payments %}
+                    <div style="padding: 15px; background: #f7fafc; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 600; color: #2d3748; margin-bottom: 5px;">{{ payment.payment_number }}</div>
+                            <div style="font-size: 13px; color: #718096;">{{ payment.payment_date|date:"M d, Y" }} - {{ payment.get_payment_method_display }}</div>
+                            {% if payment.reference_number %}
+                            <div style="font-size: 12px; color: #718096;">Ref: {{ payment.reference_number }}</div>
+                            {% endif %}
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 18px; font-weight: 700; color: #48bb78;">৳{{ payment.amount|floatformat:2 }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 40px; color: #718096;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">💵</div>
+                    <div>No payments recorded</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Amount Summary -->
+            <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Amount Summary</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+                        <span style="color: #718096;">Tax Amount:</span>
+                        <span style="color: #2d3748; font-weight: 600;">৳{{ holding_tax.tax_amount|floatformat:2 }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+                        <span style="color: #718096;">Penalty:</span>
+                        <span style="color: #2d3748; font-weight: 600;">৳{{ holding_tax.penalty_amount|floatformat:2 }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid #e2e8f0;">
+                        <span style="color: #718096;">Total Paid:</span>
+                        <span style="color: #48bb78; font-weight: 600;">৳{{ total_paid|floatformat:2 }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 10px;">
+                        <span style="color: #2d3748; font-weight: 700;">Balance:</span>
+                        <span style="color: #f56565; font-weight: 700; font-size: 18px;">৳{{ balance|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">System Information</h3>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Created At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ holding_tax.created_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Updated At</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ holding_tax.updated_at|date:"F d, Y h:i A" }}</div>
+                    </div>
+                    {% if holding_tax.created_by %}
+                    <div>
+                        <div style="color: #718096; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Created By</div>
+                        <div style="color: #2d3748; font-size: 14px;">{{ holding_tax.created_by.get_full_name|default:holding_tax.created_by.username }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notes -->
+            {% if holding_tax.notes %}
+            <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <h3 style="color: #2d3748; font-size: 18px; font-weight: 700; margin-bottom: 15px;">Notes</h3>
+                <div style="color: #4a5568; font-size: 14px; line-height: 1.6;">{{ holding_tax.notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div style="margin-top: 20px;">
+                <a href="{% url 'holdingtax:property_detail' holding_tax.holding_property.pk %}" style="display: block; padding: 12px; background: #4299e1; color: white; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600; margin-bottom: 10px;">
+                    🏠 View Property
+                </a>
+                <a href="{% url 'holdingtax:delete' holding_tax.pk %}" style="display: block; padding: 12px; background: #f56565; color: white; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600;" onclick="return confirm('Are you sure you want to delete this tax?')">
+                    🗑️ Delete Tax
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

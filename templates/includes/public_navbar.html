@@ -1,0 +1,115 @@
+{% load static %}
+<nav class="navbar">
+    <a href="/" class="logo">
+        <div class="logo-icon">🏛️</div>
+        <span>City Corporation</span>
+    </a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/tenders/">Tenders</a>
+        <a href="/citizen-charters/">Citizen Charters</a>
+        <a href="/complaints/submit/">Submit Complaint</a>
+        {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+                <a href="/admin/dashboard/">Admin Panel</a>
+            {% elif user.groups.all %}
+                {% with first_group=user.groups.all|first %}
+                    {% if first_group.name == 'SuperAdmin' %}
+                        <a href="/admin/dashboard/">Admin Panel</a>
+                    {% elif first_group.name == 'citizen' %}
+                        <a href="/citizen/dashboard/">My Dashboard</a>
+                    {% elif first_group.name == 'Holding Tax Field Officer' %}
+                        <a href="/field-officer/dashboard/">Field Officer</a>
+                    {% elif first_group.name == 'Officer' %}
+                        <a href="/officer/dashboard/">Officer</a>
+                    {% else %}
+                        <a href="/admin/dashboard/">Dashboard</a>
+                    {% endif %}
+                {% endwith %}
+            {% else %}
+                <a href="/admin/dashboard/">Dashboard</a>
+            {% endif %}
+            <a href="/admin/logout/">Logout</a>
+        {% else %}
+            <a href="/admin/login/">Admin Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 20px 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #667eea;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .logo:hover {
+        opacity: 0.8;
+    }
+
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: white;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+    }
+
+    .nav-links a {
+        color: #4a5568;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        padding: 8px 16px;
+        border-radius: 8px;
+    }
+
+    .nav-links a:hover {
+        color: #667eea;
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .nav-links {
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .nav-links a {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
