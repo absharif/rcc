@@ -41,7 +41,17 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Run migrations:
+4. Set up environment variables:
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env file and update SECRET_KEY and other settings
+# For production, generate a new SECRET_KEY:
+# python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+5. Run migrations:
 ```bash
 python manage.py migrate
 ```
