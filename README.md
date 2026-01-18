@@ -16,9 +16,11 @@ A comprehensive Django-based administrative system for managing city corporation
 ## Design Features
 
 - **Premium Login Page**: Colorful, animated gradient background with modern UI
-- **Custom Admin Interface**: Sidebar navigation with beautiful design
+- **Custom Admin Dashboard**: Beautiful dashboard with statistics cards, charts, and real-time data
+- **Sidebar Navigation**: Modern sidebar with organized sections and smooth animations
 - **Responsive Layout**: Works seamlessly on desktop and mobile devices
 - **Modern Color Scheme**: Professional gradient-based color palette
+- **Interactive Charts**: Chart.js integration for data visualization
 
 ## Installation
 
@@ -54,9 +56,11 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-7. Access the admin panel:
-- Navigate to `http://127.0.0.1:8000/admin/`
-- Login with your superuser credentials
+7. Access the application:
+- **Home Page**: `http://127.0.0.1:8000/`
+- **Admin Dashboard**: `http://127.0.0.1:8000/admin/dashboard/`
+- **Login Page**: `http://127.0.0.1:8000/admin/login/`
+- **Django Admin** (optional): `http://127.0.0.1:8000/django-admin/`
 
 ## Project Structure
 
