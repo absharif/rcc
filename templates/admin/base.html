@@ -27,6 +27,10 @@
 <!-- Container -->
 <div id="container" class="admin-container-wrapper">
     {% if not is_popup %}
+    <!-- Mobile Sidebar Toggle -->
+    <button class="mobile-sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        ☰
+    </button>
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="admin-sidebar">
         <div class="sidebar-header">
@@ -188,6 +192,39 @@
     {% endif %}
 </div>
 <!-- END Container -->
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('active');
+        }
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const toggle = document.querySelector('.mobile-sidebar-toggle');
+        
+        if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
+            if (toggle && !sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+
+    // Close sidebar when clicking a nav link on mobile
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    });
+</script>
 
 {% block scripts %}{% endblock %}
 </body>
