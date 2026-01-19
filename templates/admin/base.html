@@ -29,8 +29,12 @@
     {% if not is_popup %}
     <!-- Mobile Sidebar Toggle -->
     <button class="mobile-sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-        ☰
+        <span></span>
+        <span></span>
+        <span></span>
     </button>
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <!-- Sidebar Navigation -->
     <aside id="sidebar" class="admin-sidebar">
         <div class="sidebar-header">
@@ -39,6 +43,9 @@
                 <h2>City Corporation</h2>
                 <p>Admin Panel</p>
             </div>
+            <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close sidebar">
+                ✕
+            </button>
         </div>
         
         <nav class="sidebar-nav">
@@ -196,34 +203,77 @@
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const toggle = document.querySelector('.mobile-sidebar-toggle');
+        
         if (sidebar) {
             sidebar.classList.toggle('active');
+            if (overlay) {
+                overlay.classList.toggle('active');
+            }
+            if (toggle) {
+                toggle.classList.toggle('active');
+            }
         }
     }
 
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-        const sidebar = document.getElementById('sidebar');
-        const toggle = document.querySelector('.mobile-sidebar-toggle');
-        
-        if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('active')) {
-            if (toggle && !sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                sidebar.classList.remove('active');
+    // Close sidebar when clicking overlay
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
             }
-        }
-    });
+        });
+    }
 
     // Close sidebar when clicking a nav link on mobile
-    document.querySelectorAll('.nav-item').forEach(link => {
+    document.querySelectorAll('.nav-item, .logout-btn').forEach(link => {
         link.addEventListener('click', function() {
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
-                if (sidebar) {
-                    sidebar.classList.remove('active');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    toggleSidebar();
                 }
             }
         });
     });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const toggle = document.querySelector('.mobile-sidebar-toggle');
+            
+            if (sidebar) {
+                sidebar.classList.remove('active');
+            }
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            if (toggle) {
+                toggle.classList.remove('active');
+            }
+        }
+    });
+
+    // Prevent body scroll when sidebar is open on mobile
+    function preventBodyScroll() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('active') && window.innerWidth <= 768) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Watch for sidebar state changes
+    const observer = new MutationObserver(preventBodyScroll);
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+    }
 </script>
 
 {% block scripts %}{% endblock %}
